@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block head %}Registration{% endblock %}
+{% block body %}
+
+<h1 style="padding-left: 10%;">Registration</h1></br></br>
+<form style="padding-left: 10%;" action="{{url_for('index')}}" method="POST">
+
+    <input type="text" placeholder="Enter your user name " name="user"/>
+</br></br>
+    <input type="password" placeholder="Enter your password" name="pass"/>
+</br></br>
+    <input type="submit" value="Register!"/>
+
+</form>
+
+</br>
+{% if duplicate %}
+<h4>User with that name already exist Try another name</h4>
+{% endif %}
+{% if length %}
+<h4>UserName  or Password can not be empty</h4>
+
+{% endif %}
+
+{% endblock %}

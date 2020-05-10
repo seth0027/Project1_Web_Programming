@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block head %}
+
+
+{{book.title}}
+{% endblock %}
+{% block body %}
+
+<h5>
+    Book ISBN: {{book.isbn}}<br/>
+    Book Title: {{book.title}}<br/>
+    Book Author: {{book.author}}<br/>
+    Book Year: {{book.year}}<br/>
+</h5>
+<br/>
+<br/>
+<h4><a href="{{url_for('info',isbn=book.isbn)}}"> API Route</a></h4>
+<br/>
+<h3>
+    Reviews</h3>
+    <br/>
+    {% if sub %}
+    <form action="{{url_for('book',isbn=book.isbn)}}" method="POST">
+        <select name="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <input type="text" placeholder="Comments" name="comment"/>
+        <input type="submit" value="Submit review"/>
+          
+    </form>
+    {% else %}
+    <h5>Your review for this book is submitted</h5>
+
+    {% endif %}
+    <br/>
+    {% if avail %}
+    <h3>API Ratings</h3>
+    <h5>
+        Average rating:  {{average}}<br/>
+        Number of ratings:  {{count}}<br/>
+       
+    </h5>
+
+    {% endif %}
+    <br/>
+    <table style="width: 100%;">
+        <tr><th>Users</th><th>Ratings</th><th>Comments</th></tr>
+    {% for review in reviews %}
+    <tr><td>{{review.username}}</td><td>{{review.rating}}</td><td>{{review.comment}}</td></tr>
+    {% endfor %}
+</table>
+
+
+    
+
+{% endblock %}

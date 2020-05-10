@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block head %}
+
+Search
+
+{% endblock %}
+{% block body %}
+{% if error %}
+<h5>No books found </h5>
+{% else %}
+<ul>
+{% for book in books %}
+<h5>
+   <li> <a href="{{url_for('book',isbn=book.isbn)}}">
+    {{book.title}}
+</a></li></h5>
+{% endfor %}</ul>
+
+{% endif %}
+
+{% endblock %}
