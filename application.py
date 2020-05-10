@@ -39,22 +39,26 @@ if __name__ == "__main__":
 
 @app.route("/",methods=["POST","GET"])
 def index():
+    if session.get("user_id") is not None:
+        uid=session.get("user_id")
+        use=User.query.get(uid)
+        return render_template("login.html",username=use.username,error=False)
+
     password=request.form.get("pass")
     user=request.form.get("user")
     val=password!=None and user!=None
     if val:
         if len(password) < 1 or len(user) < 1:
             return redirect(url_for("register",length=True))
-        try:
-           
-            user=User(username=user,password=password)
-            db.session.add(user)
+        use=User.query.filter_by(username=user).first()
+        
+        if use is None:
+            use=User(username=user,password=password)
+            db.session.add(use)
             db.session.commit()
-        except:
-            return redirect(url_for("register",duplicate=True))
-    if "username" in session:
-        session["username"]=None
     
+        else:
+            return redirect(url_for("register",duplicate=True))    
     return render_template("index.html",val=val,no=False)
 
 @app.route("/login",methods=["POST"])
@@ -66,7 +70,7 @@ def login():
     user=User.query.filter_by(username=username,password=password).first()
     if user is not None:
         error=False
-        session["username"]=username
+        session["user_id"]=user.id
         
         return render_template("login.html",username=username,error=error)
     else:
@@ -106,13 +110,15 @@ def book(isbn):
 
         rating=request.form.get("rating")
         comment=request.form.get("comment")
-        username=session.get("username")
+        userid=session.get("user_id")
+        user=User.query.get(userid)
+        username=user.username
         if rating is not None:
            
-            book.add_review(comment,rating,username)
+            book.add_review(comment,rating,username,userid)
 
         reviews=Review.query.filter_by(isbn=isbn).all()
-        review=Review.query.filter_by(isbn=isbn,username=username).first()
+        review=Review.query.filter_by(isbn=isbn,user_id=userid).first()
         if review is None:
             sub=True
         else:
@@ -155,6 +161,14 @@ def info(isbn):
             average=data['books'][0]['average_rating']
             count=data['books'][0]['work_ratings_count']
             return jsonify({"title":title,"year":year,"author":author,"isbn":isbn,"review_count":count,"average_score":average})
+
+
+@app.route("/logout")
+def logout():
+    if session.get("user_id") is not None:
+        session["user_id"]=None
+    return redirect(url_for('index'))
+
 
 
 
